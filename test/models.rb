@@ -1,11 +1,3 @@
-# class Template < ActiveRecord::Base
-#   serialize :data
-# 
-#   data_attribute_column :things
-#   data_attributes :stuff, { :junk => :data, :blarg => :data, :foo => :things }, { :huh => :data }
-# 
-# end
-
 class Basic < ActiveRecord::Base
   serialize :data
   data_attributes :stuff
@@ -13,7 +5,8 @@ end
 
 class TwoAttribute < ActiveRecord::Base
   serialize :data
-  data_attributes :stuff, :things
+  data_attributes :stuff
+  data_attributes :things
 end
 
 class DifferentSerializedAttribute < ActiveRecord::Base
@@ -28,5 +21,6 @@ class TwoSerializedAttribute < ActiveRecord::Base
   serialize :more_data
 
   data_attribute_column :more_data
-  data_attributes :stuff, 'stuff_two', { :things => :data, :junk => :data }, { :things_two => :data }
+  data_attributes :stuff, { :serialized_column => :data, :default => 1 }
+  data_attributes :things, { :default => "two" }
 end

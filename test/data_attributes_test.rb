@@ -4,13 +4,19 @@ class TestDataAttributes < Test::Unit::TestCase
 
   def test_setup
     assert_equal Basic.attr_data_attribute_column, :data
-    assert_equal Basic.attr_data_attributes, { :stuff => :data }
+    assert_equal Basic.attr_data_attributes, { :stuff => { :serialized_column => :data, :default => nil } }
     assert_equal TwoAttribute.attr_data_attribute_column, :data
-    assert_equal TwoAttribute.attr_data_attributes, { :stuff => :data, :things => :data }
+    assert_equal TwoAttribute.attr_data_attributes, {
+      :stuff  => { :serialized_column => :data, :default => nil },
+      :things => { :serialized_column => :data, :default => nil }
+    }
     assert_equal DifferentSerializedAttribute.attr_data_attribute_column, :more_data
-    assert_equal DifferentSerializedAttribute.attr_data_attributes, { :stuff => :more_data }
+    assert_equal DifferentSerializedAttribute.attr_data_attributes, { :stuff => { :serialized_column => :more_data, :default => nil } }
     assert_equal TwoSerializedAttribute.attr_data_attribute_column, :more_data
-    assert_equal TwoSerializedAttribute.attr_data_attributes, { :stuff => :more_data, :stuff_two => :more_data, :things => :data, :junk => :data, :things_two => :data }
+    assert_equal TwoSerializedAttribute.attr_data_attributes, {
+      :stuff => { :serialized_column => :data, :default => 1 },
+      :things => { :serialized_column => :more_data, :default => "two" }
+    }
   end
 
   def test_basic
@@ -67,22 +73,16 @@ class TestDataAttributes < Test::Unit::TestCase
     t = TwoSerializedAttribute.new
     assert_equal t.data, nil
     assert_equal t.more_data, nil
-    assert_equal t.stuff, nil
-    assert_equal t.stuff_two, nil
-    assert_equal t.things, nil
-    assert_equal t.junk, nil
+    assert_equal t.stuff, 1
+    assert_equal t.things, "two"
 
     t.stuff = "stuff val"
-    t.stuff_two = "stuff_two val"
     t.things = "things val"
-    t.junk = "junk val"
 
     assert_equal t.stuff, "stuff val"
-    assert_equal t.stuff_two, "stuff_two val"
     assert_equal t.things, "things val"
-    assert_equal t.junk, "junk val"
-    assert_equal t.data, { "things" => "things val", "junk" => "junk val" }
-    assert_equal t.more_data, { "stuff" => "stuff val", "stuff_two" => "stuff_two val" }
+    assert_equal t.more_data, { "things" => "things val" }
+    assert_equal t.data, { "stuff" => "stuff val" }
   end
 
   def test_saving
@@ -97,7 +97,25 @@ class TestDataAttributes < Test::Unit::TestCase
 
     b.save
 
+    b = Basic.find(id)
     assert_equal b.stuff, "blah"
     assert_equal b.data, { "stuff" => "blah" }
+  end
+
+  def test_non_serialized_error
+    klass = Class.new(ActiveRecord::Base)
+    ActiveRecord::Base.const_set("NonSerializedAttribute", klass)
+
+    assert_raise(DataAttributes::NonSerializedColumnError) do
+      klass.class_eval do
+        data_attributes :stuff
+      end
+    end
+  end
+
+  def test_data_attribute_options
+    assert_raise(DataAttributes::NonDataAttributeError) do
+      Basic.data_attribute_options(:things)
+    end
   end
 end
