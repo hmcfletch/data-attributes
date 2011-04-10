@@ -9,15 +9,19 @@ module DataAttributes
 
       # set the default serialized attribute to use to store all the values
       # default is :data
+      # raises +NonSerializedColumnError+ if value isn't serlialized
       def data_attribute_column(value)
+        raise(NonSerializedColumnError) unless serialized_attributes[value.to_s]
         write_inheritable_attribute(:attr_data_attribute_column, value.to_sym)
       end
 
-      # set up attribute accessors for values stored in the serialized hash
-      # takes and array and sets up a read and write accessor for each one
-      # use :attr_data_attribute_column unless a hash is given, then the key
-      # is the attribute and the value is the serialized attribute to use for storage
-      def data_attributes(name, arg_opts={})
+      # set up an attribute accessor for values stored in the serialized hash
+      # takes an attribute name and a hash sets up a read and write accessor for it
+      # options:
+      #   :serialized_column => the column used to store the attribute info
+      #   :default => what to return if the attribute is not set
+      # raises +NonSerializedColumnError+ if the column specified isn't serlialized
+      def data_attribute(name, arg_opts={})
         opts = {
           :serialized_column => attr_data_attribute_column,
           :default => nil

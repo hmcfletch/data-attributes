@@ -108,7 +108,18 @@ class TestDataAttributes < Test::Unit::TestCase
 
     assert_raise(DataAttributes::NonSerializedColumnError) do
       klass.class_eval do
-        data_attributes :stuff
+        data_attribute :stuff
+      end
+    end
+  end
+
+  def test_default_non_serialized_error
+    klass = Class.new(ActiveRecord::Base)
+    ActiveRecord::Base.const_set("DefaultNonSerializedAttribute", klass)
+
+    assert_raise(DataAttributes::NonSerializedColumnError) do
+      klass.class_eval do
+        data_attribute_column :more_data
       end
     end
   end

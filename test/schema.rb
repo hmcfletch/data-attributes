@@ -22,5 +22,9 @@ ActiveRecord::Base.silence do
     create_table "non_serialized_attributes" do |t|
       t.text :data
     end
+
+    create_table "default_non_serialized_attributes" do |t|
+      t.text :more_data
+    end
   end
 end
