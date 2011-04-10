@@ -35,11 +35,11 @@ The default serialized attribute used is +data+. There are two ways to change th
 
     data_attribute_column :more_data
 
-This makes all of the accessors created with +data_attributes+ be saved in +:more_data+ instead of +:data+.  If a class has two (or more) serialized attributes that will share the storage responsibilities, each attribute defined with +data_attributes+ can be individually assigned to a serialized attribute by using a hash.
+This makes all of the accessors created with +data_attributes+ be saved in +more_data+ instead of +data+.  If a class has two (or more) serialized attributes that will share the storage responsibilities, each attribute defined with +data_attributes+ can be individually assigned to a serialized attribute by using a hash.
 
     data_attribute :details, { :serialized_column => :more_data }
 
-This creates an accessor that saves +:details+ to +:more_data+.
+This creates an accessor that saves +details+ to +more_data+.
 
 You can set a default to be returned, in the case the value hasn't be set yet.
 
