@@ -1,0 +1,73 @@
+= Data Attributes
+
+== Description
+
+A gem for easy access to attributes stored in a serialized data hash.
+
+== Summary
+
+ActiveRecord attributes are mapped to columns in your database; however, many attributes that needed to be persisted for an object don't need their own column because they will never be searched or filtered on.  One solution is to save these with a serialized hash into a text field in the database and provide similar access to the values as other attribute accessors.
+
+== Usage
+
+Consider a +User+ class that has a text field that is serialized, +:data+.
+
+    class User < ActiveRecord::Base
+
+      serialize :data
+
+    end
+
+We can set an accessor to an attribute to be saved in the +:data+ field with the following:
+
+    data_attributes :details
+
+This generates a read and write accessor called +details+.
+
+    u = User.new
+    u.details = "I don't need to query on this."
+    puts u.details
+    => I don't need to query on this.
+    puts u.data.inspect
+    => { "details" => "I don't need to query on this." }
+
+The default serialized attribute used is +data+. There are two ways to change the serialized attribute used for storage. The first is set a different default attribute for the class.
+
+    data_attribute_column :more_data
+
+This makes all of the accessors created with +data_attributes+ be saved in +:more_data+ instead of +:data+.  If a class has two (or more) serialized attributes that will share the storage responsibilities, each attribute defined with +data_attributes+ can be individually assigned to a serialized attribute by using a hash.
+
+    data_attributes { :details => :more_data }
+
+This creates an accessor that saves +:details+ to +:more_data+.
+
+Hashes can be combined with symbols and strings to define all the data attributes on one line.
+
+    data_attributes :attr1, 'attr2', { :attr3 => :more_data }, { :attr4 => :data, :attr5 => :data, :attr6 => :more_data }
+
+== Under The Hood
+
+Like column accessors that make use of +read_attribute+ and +write_attribute+, +data-attributes+ uses +read_data_attribute+ and +write_data_attribute+ to access the serialized attribute. This allows the ability to overwrite an accessor so any validation or other data manipulation needed before the value is returned or saved.
+
+== License
+
+Copyright (c) 2011 Les Fletcher
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
