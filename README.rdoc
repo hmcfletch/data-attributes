@@ -10,7 +10,7 @@ ActiveRecord attributes are mapped to columns in your database; however, many at
 
 == Usage
 
-Consider a +User+ class that has a text field that is serialized, +:data+.
+Consider a +User+ class that has a text field that is serialized, +data+.
 
     class User < ActiveRecord::Base
 
@@ -47,7 +47,7 @@ You can set a default to be returned, in the case the value hasn't be set yet.
 
 == Under The Hood
 
-Like column accessors that make use of +read_attribute+ and +write_attribute+, +data-attributes+ uses +read_data_attribute+ and +write_data_attribute+ to access the serialized attribute. This allows the ability to overwrite an accessor so any validation or other data manipulation needed before the value is returned or saved.
+Like column accessors that make use of +read_attribute+ and +write_attribute+, data-attributes uses +read_data_attribute+ and +write_data_attribute+ to access the serialized attribute. This allows the ability to overwrite an accessor so any validation or other data manipulation needed before the value is returned or saved.
 
 == License
 
